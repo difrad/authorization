@@ -1,4 +1,4 @@
-# amplifyauth
+# amplify-app
 
 ## Project setup
 ```

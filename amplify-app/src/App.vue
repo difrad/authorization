@@ -14,7 +14,13 @@
 import { onAuthUIStateChange } from '@aws-amplify/ui-components'
 
 export default {
-  name: 'AuthApp',
+  name: 'AuthStateApp',
+  created() {
+    this.unsubscribeAuth = onAuthUIStateChange((authState, authData) => {
+      this.authState = authState;
+      this.user = authData;
+    })
+  },
   data() {
     return {
       user: undefined,
@@ -22,15 +28,30 @@ export default {
       unsubscribeAuth: undefined
     }
   },
-  created() {
-    this.unsubscribeAuth = onAuthUIStateChange((authState, authData) => {
-      this.authState = authState;
-      this.user = authData;
-    })
-  },
-  
   beforeDestroy() {
     this.unsubscribeAuth();
+  }
+}
+
+export default {
+  name: 'AuthWithSlots',
+  data() {
+    return {
+      formFields: [
+        {
+          type: 'email',
+          label: 'Custom Email Label',
+          placeholder: 'Custom email placeholder',
+          inputProps: { required: true, autocomplete: 'username' },
+        },
+        {
+          type: 'password',
+          label: 'Custom Password Label',
+          placeholder: 'Custom password placeholder',
+          inputProps: { required: true, autocomplete: 'new-password' },
+        },
+      ]
+    }
   }
 }
 </script>
