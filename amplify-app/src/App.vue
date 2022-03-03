@@ -1,59 +1,41 @@
 <template>
-  <div>
-    <div v-if="authState !== 'signedin'">You are signed out.</div>
-    <amplify-authenticator>
-      <div v-if="authState === 'signedin' && user">
-        <div>Hello, {{user.username}}</div>
-      </div>
-      <amplify-sign-out></amplify-sign-out>
-    </amplify-authenticator>
-  </div>
+  <authenticator>
+    <template v-slot="{ user, signOut }">
+      <h1>Hello {{ user.username }}!</h1>
+      <button @click="signOut">Sign Out</button>
+    </template>
+  </authenticator>
 </template>
 
 <script>
-import { onAuthUIStateChange } from '@aws-amplify/ui-components'
+  import { Authenticator } from "@aws-amplify/ui-vue";
+  import "@aws-amplify/ui-vue/styles.css";
+  import { AuthState, onAuthUIStateChange } from '@aws-amplify/ui-components';
 
-export default {
-  name: 'AuthStateApp',
-  created() {
-    this.unsubscribeAuth = onAuthUIStateChange((authState, authData) => {
-      this.authState = authState;
-      this.user = authData;
-    })
-  },
-  data() {
-    return {
-      user: undefined,
-      authState: undefined,
-      unsubscribeAuth: undefined
-    }
-  },
-  beforeDestroy() {
-    this.unsubscribeAuth();
-  }
-}
+  import Amplify from 'aws-amplify';
+  import awsconfig from './aws-exports';
 
-export default {
-  name: 'AuthWithSlots',
-  data() {
-    return {
-      formFields: [
-        {
-          type: 'email',
-          label: 'Custom Email Label',
-          placeholder: 'Custom email placeholder',
-          inputProps: { required: true, autocomplete: 'username' },
-        },
-        {
-          type: 'password',
-          label: 'Custom Password Label',
-          placeholder: 'Custom password placeholder',
-          inputProps: { required: true, autocomplete: 'new-password' },
-        },
-      ]
+  export default {
+    setup(){
+      name: 'App',
+      created(){
+        //authentication state management
+        onAuthUIStateChange((state, user) => {
+          //set current user and load data after login
+          if(state === AuthState.SignedIn){
+            this.user = user;
+          }
+        });
+      }
+      data(){
+        return {
+          user: {}
+        };
+      }
+      
+      }
     }
-  }
-}
+  };
 </script>
 
 <style>
@@ -66,3 +48,4 @@ export default {
   margin-top: 60px;
 }
 </style>
+
